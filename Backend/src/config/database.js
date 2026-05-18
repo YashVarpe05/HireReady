@@ -1,17 +1,20 @@
 const mongoose = require("mongoose");
-const express = require("express");
-const app = express();
-
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Server is running on port ${port}`));
 
 async function connectToDB() {
+	if (!process.env.MONGO_URI) {
+		console.error(
+			"MONGO_URI is not set. Set the MONGO_URI environment variable to your MongoDB connection string.",
+		);
+		throw new Error("MONGO_URI not provided");
+	}
+
 	try {
 		await mongoose.connect(process.env.MONGO_URI);
 
 		console.log("Connected to Database");
 	} catch (err) {
-		console.log(err);
+		console.error("Failed to connect to MongoDB:", err && err.message ? err.message : err);
+		throw err;
 	}
 }
 
